@@ -5,9 +5,6 @@ namespace Tchwork\Bootstrapper\Symfony\Component\Console\Output;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * @internal
- */
 final class OutputInterfaceSingleton
 {
     private static $output;

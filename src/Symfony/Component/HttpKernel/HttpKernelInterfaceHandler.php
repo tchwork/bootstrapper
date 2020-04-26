@@ -6,9 +6,6 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\TerminableInterface;
 use Tchwork\Bootstrapper\Symfony\Component\HttpFoundation\RequestSingleton;
 
-/**
- * @internal
- */
 final class HttpKernelInterfaceHandler
 {
     public static function handle(HttpKernelInterface $kernel): int

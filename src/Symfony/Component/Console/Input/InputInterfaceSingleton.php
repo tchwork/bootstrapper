@@ -5,9 +5,6 @@ namespace Tchwork\Bootstrapper\Symfony\Component\Console\Input;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 
-/**
- * @internal
- */
 final class InputInterfaceSingleton
 {
     private static $input;

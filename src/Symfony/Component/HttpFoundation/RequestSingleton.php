@@ -4,9 +4,6 @@ namespace Tchwork\Bootstrapper\Symfony\Component\HttpFoundation;
 
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * @internal
- */
 final class RequestSingleton
 {
     private static $request;

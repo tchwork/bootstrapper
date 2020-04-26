@@ -8,10 +8,7 @@ use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\ErrorHandler\ErrorHandler;
 use Tchwork\Bootstrapper\Symfony\Component\Console\Input\InputInterfaceSingleton;
 
-/**
- * @internal
- */
-class Bootstrapper
+final class Bootstrapper implements BootstrapperInterface
 {
     public function boot(string $projectDir): void
     {
