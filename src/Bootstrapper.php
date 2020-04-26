@@ -11,9 +11,9 @@ use Tchwork\Bootstrapper\Symfony\Component\Console\Input\InputInterfaceSingleton
 /**
  * @internal
  */
-final class Bootstrapper
+class Bootstrapper
 {
-    public function __construct(string $projectDir)
+    public function boot(string $projectDir): void
     {
         if (isset($_SERVER['argv']) && class_exists(ArgvInput::class)) {
             InputInterfaceSingleton::get();
@@ -29,63 +29,53 @@ final class Bootstrapper
         }
     }
 
-    public function handle($main): int
+    public function getRuntime(\Closure $closure): array
     {
-        if (1 === $main) {
-            return 0;
-        }
+        $arguments = [];
 
-        if (\is_callable($main)) {
-            if (!$main instanceof \Closure) {
-                $main = \Closure::fromCallable($main);
+        foreach ((new \ReflectionFunction($closure))->getParameters() as $parameter) {
+            $class = 'Tchwork\Bootstrapper\\'.$parameter->getType()->getName().'Singleton';
+
+            if (class_exists($class)) {
+                $arguments[] = $class::get();
+                continue;
             }
 
-            $arguments = [];
-            foreach ((new \ReflectionFunction($main))->getParameters() as $parameter) {
-                $class = 'Tchwork\Bootstrapper\\'.$parameter->getType()->getName().'Singleton';
-
-                if (class_exists($class)) {
-                    $arguments[] = $class::get();
-                    continue;
-                }
-
-                if ('Tchwork\Bootstrapper\arraySingleton' === $class) {
-                    $arguments[] = $_SERVER;
-                    continue;
-                }
-
-                $arguments[] = null;
+            if ('Tchwork\Bootstrapper\arraySingleton' === $class) {
+                $arguments[] = $_SERVER;
+                continue;
             }
 
-            $main = $main(...$arguments);
+            $arguments[] = null;
         }
 
-        if (!\is_object($main)) {
-            echo 'Main script returned unsupported value of type '.get_debug_type($main).".\n";
+        return [$closure, $arguments];
+    }
 
-            return 1;
-        }
-
-        $class = \get_class($main);
+    public function getHandler(object $result, \Closure $closure, array $arguments): callable
+    {
+        $class = \get_class($result);
 
         if (class_exists($c = 'Tchwork\Bootstrapper\\'.$class.'Handler')) {
-            return $c::handle($main);
+            return [$c, 'handle'];
         }
 
         foreach (class_parents($class) as $c) {
             if (class_exists($c = 'Tchwork\Bootstrapper\\'.$c.'Handler')) {
-                return $c::handle($main);
+                return [$c, 'handle'];
             }
         }
 
         foreach (class_implements($class) as $c) {
             if (class_exists($c = 'Tchwork\Bootstrapper\\'.$c.'Handler')) {
-                return $c::handle($main);
+                return [$c, 'handle'];
             }
         }
 
-        echo 'Main script returned unsupported value of type '.get_debug_type($main).".\n";
+        return static function (object $result): int {
+            echo 'The runtime returned an unsupported value of type '.get_debug_type($result).".\n";
 
-        return 1;
+            return 1;
+        };
     }
 }
