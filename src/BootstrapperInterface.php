@@ -5,11 +5,6 @@ namespace Tchwork\Bootstrapper;
 interface BootstrapperInterface
 {
     /**
-     * Prepares the PHP engine.
-     */
-    public function boot(string $projectDir): void;
-
-    /**
      * Returns a closure and its arguments; they will run the main code.
      */
     public function getRuntime(\Closure $closure): array;

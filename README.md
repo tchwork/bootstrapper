@@ -21,7 +21,7 @@ Replace the content of the `public/index.php` file by:
 
 use App\Kernel;
 
-require dirname(__DIR__).'/vendor/tchwork/bootstrapper/bootstrap.php';
+require_once dirname(__DIR__).'/vendor/tchwork/bootstrapper/symfony-bootstrap.php';
 
 return function (array $context) {
     return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
@@ -36,7 +36,7 @@ And the content of the `bin/console` file by:
 use App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 
-require dirname(__DIR__).'/vendor/tchwork/bootstrapper/bootstrap.php';
+require_once dirname(__DIR__).'/vendor/tchwork/bootstrapper/symfony-bootstrap.php';
 
 return function (array $context) {
     $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
@@ -58,7 +58,7 @@ Try also this front controller, e.g. `public/hello.php`:
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-require dirname(__DIR__).'/vendor/tchwork/bootstrapper/bootstrap.php';
+require_once dirname(__DIR__).'/vendor/tchwork/bootstrapper/symfony-bootstrap.php';
 
 return function (Request $request) {
     return new Response('Hello World!');
@@ -72,21 +72,31 @@ The mechanism to create the arguments and handle the return value can be configu
 Runtime Conventions
 -------------------
 
-In order to boot from global state, a few conventions are needed:
+In order to boot from global state, three conventions are available:
+
+ - the bootstrapping logic should implement `BootstrapperInterface`; `GenericBootstrapper` provides a generic implementation;
+ - `$_SERVER['TCHWORK_BOOTSTRAPPER']` should be set to a class name or an instance of `BootstrapperInterface` that will be used to run the app;
+ - the `bootstrap.php` file in this package or an equivalent shall be included instead of the typical `vendor/autoload.php` file.
+
+That's all. Keeping this list as short as possible is desired.
+
+If you are in the context of a Symfony app, you can include the `symfony-bootstrap.php` file instead.
+That will add the following additional conventions:
 
  - `.env` files are always loaded if they are found in the root dir of your app (see the Symfony Dotenv component for more details);
  - PHP warnings and notices are turned into `ErrorException` (see the Symfony ErrorHandler component for more details);
  - the `APP_ENV` and the `APP_DEBUG` environement variables are used to configure the mode in which the app should run;
  - on the command line, `-e|--env` allows forcing a specific value for `APP_ENV` and `--no-debug` allows forcing `APP_DEBUG` to `0`.
 
-Keeping this list as short as possible is desired.
+Those are the defaults already for any Symfony app.
 
 Extensibility
 -------------
 
-This package ships argument resolvers and return value handlers that work with Symfony components.
+This section describes the extensibility mechanism supported by `GenericBootstrapper`
+You can provide any other mechanism by implementing `BootstrapperInterface`.
 
-If you want to make it know about any other namespaces, there are two conventions to follow:
+`GenericBootstrapper` builds on two simple conventions to provide argument resolvers and return value handlers:
 
  - to create an argument for a class/interface named `MyNamespace\InputObject`,
    create a derived class with the `Tchwork\Bootstrapper\` prefix and the `Singleton` suffix.
@@ -124,8 +134,9 @@ If you want to make it know about any other namespaces, there are two convention
    }
    ```
 
-That's it.
+This package already provides some for the Symfony component.
+Check their source code for inspiration.
 
 Please give it a try and tell me what you think about it!
 
-Protip: adding `auto_prepend_file=/path/to/test-app/vendor/tchwork/bootstrapper/bootstrap.php` to your `php.ini` file allows removing the `require` statements in the examples.
+Protip: adding `auto_prepend_file=/path/to/your-bootstrap.php` to your `php.ini` file allows removing the `require` statements in the examples.
