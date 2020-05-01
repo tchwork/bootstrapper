@@ -2,8 +2,8 @@
 
 use Tchwork\Bootstrapper\SymfonyBootstrapper;
 
-if (!isset($_SERVER['TCHWORK_BOOTSTRAPPER'])) {
-    $_SERVER['TCHWORK_BOOTSTRAPPER'] = SymfonyBootstrapper::class;
+if (!isset($_SERVER['APP_BOOTSTRAPPER'])) {
+    $_SERVER['APP_BOOTSTRAPPER'] = SymfonyBootstrapper::class;
 }
 
 require __DIR__.'/bootstrap.php';

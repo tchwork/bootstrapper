@@ -75,7 +75,7 @@ Runtime Conventions
 In order to boot from global state, three conventions are available:
 
  - the bootstrapping logic should implement `BootstrapperInterface`; `GenericBootstrapper` provides a generic implementation;
- - `$_SERVER['TCHWORK_BOOTSTRAPPER']` should be set to a class name or an instance of `BootstrapperInterface` that will be used to run the app;
+ - `$_SERVER['APP_BOOTSTRAPPER']` should be set to a class name or an instance of `BootstrapperInterface` that will be used to run the app;
  - the `bootstrap.php` file in this package or an equivalent shall be included instead of the typical `vendor/autoload.php` file.
 
 That's all. Keeping this list as short as possible is desired.
