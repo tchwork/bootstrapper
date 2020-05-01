@@ -4,6 +4,9 @@ namespace Tchwork\Bootstrapper\Symfony\Component\Console;
 
 use Symfony\Component\Console\Application;
 
+/**
+ * @internal
+ */
 class ApplicationHandler
 {
     public static function handle(Application $app): int
